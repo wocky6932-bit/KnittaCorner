@@ -635,7 +635,7 @@ export default function AdminPage() {
                               {newProduct.image1.match(/\.(mp4|mov|webm)$/i) || newProduct.image1.startsWith("data:video") ? (
                                 <video src={newProduct.image1} className="w-full h-full object-cover" muted playsInline />
                               ) : (
-                                <Image src={newProduct.image1} alt="Photo principale" fill className="object-cover" />
+                                <img src={newProduct.image1} alt="Photo principale" className="w-full h-full object-cover" />
                               )}
                             </div>
                           )}
@@ -667,7 +667,7 @@ export default function AdminPage() {
                               {newProduct.image2.match(/\.(mp4|mov|webm)$/i) || newProduct.image2.startsWith("data:video") ? (
                                 <video src={newProduct.image2} className="w-full h-full object-cover" muted playsInline />
                               ) : (
-                                <Image src={newProduct.image2} alt="Photo de détail" fill className="object-cover" />
+                                <img src={newProduct.image2} alt="Photo de détail" className="w-full h-full object-cover" />
                               )}
                             </div>
                           )}
