@@ -15,8 +15,6 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const router = useRouter();
-
   // Filters State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tout");
