@@ -68,39 +68,17 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [dbProducts, dbOrders] = await Promise.all([
-          getProducts(),
-          getOrders()
-        ]);
+        // Fetch products first so the shop can render immediately
+        const dbProducts = await getProducts();
         
         if (dbProducts) {
-          // Cast dbProducts to any since Prisma types might slightly differ from frontend Product type
-          // e.g., JSON fields for images/details, Date objects for createdAt
           const formattedProducts = dbProducts.map((p: any) => ({
             ...p,
             images: Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images) : p.images?.images || []),
             details: Array.isArray(p.details) ? p.details : (typeof p.details === 'string' ? JSON.parse(p.details) : p.details?.details || []),
-            reviews: p.reviews || [] // assuming relations might not be fetched, so default to empty
+            reviews: p.reviews || [] 
           }));
           setProducts(formattedProducts as unknown as Product[]);
-        }
-
-        if (dbOrders) {
-          const formattedOrders = dbOrders.map((o: any) => ({
-            ...o,
-            items: o.items ? o.items.map((i: any) => {
-              const p = i.product || { name: "Produit supprimé", price: 0, images: '[]', details: '[]' };
-              return { 
-                product: { 
-                  ...p, 
-                  images: Array.isArray(p.images) ? p.images : JSON.parse(p.images || '[]'), 
-                  details: Array.isArray(p.details) ? p.details : JSON.parse(p.details || '[]') 
-                },
-                quantity: i.quantity 
-              };
-            }) : []
-          }));
-          setOrders(formattedOrders as unknown as Order[]);
         }
 
         try {
@@ -115,10 +93,35 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (storedWishlist) setWishlist(JSON.parse(storedWishlist));
         if (storedUser) setCurrentUser(JSON.parse(storedUser));
+        
+        // We set loaded to true here so the storefront is unblocked immediately!
+        setIsLoaded(true);
+
+        // Fetch orders in the background (only needed for admin panel)
+        getOrders().then((dbOrders) => {
+          if (dbOrders) {
+            const formattedOrders = dbOrders.map((o: any) => ({
+              ...o,
+              items: o.items ? o.items.map((i: any) => {
+                const p = i.product || { name: "Produit supprimé", price: 0, images: '[]', details: '[]' };
+                return { 
+                  product: { 
+                    ...p, 
+                    images: Array.isArray(p.images) ? p.images : JSON.parse(p.images || '[]'), 
+                    details: Array.isArray(p.details) ? p.details : JSON.parse(p.details || '[]') 
+                  },
+                  quantity: i.quantity 
+                };
+              }) : []
+            }));
+            setOrders(formattedOrders as unknown as Order[]);
+          }
+        }).catch(e => console.error("Could not fetch orders:", e));
+
       } catch (e) {
         console.error("Could not load initial data:", e);
+        setIsLoaded(true); // Always unblock
       }
-      setIsLoaded(true);
     };
 
     fetchInitialData();
