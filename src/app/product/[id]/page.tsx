@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 
 export default function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { products, addToCart, toggleWishlist, isWishlisted, cart, addReview } = useShop();
+  const { products, addToCart, toggleWishlist, isWishlisted, cart, addReview, isLoaded } = useShop();
 
   const product = products.find((p) => p.id === id);
   const [activeImage, setActiveImage] = useState("");
@@ -26,6 +26,19 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
       setActiveImage(product.images[0]);
     }
   }, [product]);
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#FCFAF7]">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center py-20 text-center space-y-4">
+          <div className="h-8 w-8 border-4 border-sand-200 border-t-terracotta-600 rounded-full animate-spin"></div>
+          <p className="font-serif text-charcoal-500 font-bold">Chargement du vêtement...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -77,6 +90,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
         <div className="mb-6">
           <Link
             href="/shop"
+            prefetch={true}
             className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-charcoal-500 hover:text-terracotta-600 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Retour au catalogue

@@ -46,18 +46,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { getProducts } from "@/actions/productActions";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch products on the server side during SSR!
+  // This completely eliminates the 2-5 second client-side fetch waterfall.
+  const dbProducts = await getProducts();
+  const initialProducts = dbProducts ? dbProducts.map((p: any) => ({
+    ...p,
+    images: Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images) : p.images?.images || []),
+    details: Array.isArray(p.details) ? p.details : (typeof p.details === 'string' ? JSON.parse(p.details) : p.details?.details || []),
+    reviews: p.reviews || [] 
+  })) : [];
 
   return (
     <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${playfair.variable} ${inter.variable} ${greatVibes.variable} antialiased`}
       >
-        <ShopProvider>
+        <ShopProvider initialProducts={initialProducts as any}>
           <SplashScreen />
           {children}
         </ShopProvider>

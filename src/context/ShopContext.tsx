@@ -56,8 +56,8 @@ interface ShopContextProps {
 
 const ShopContext = createContext<ShopContextProps | undefined>(undefined);
 
-export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+export const ShopProvider: React.FC<{ children: React.ReactNode, initialProducts?: Product[] }> = ({ children, initialProducts = [] }) => {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -68,17 +68,20 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Fetch products first so the shop can render immediately
-        const dbProducts = await getProducts();
-        
-        if (dbProducts) {
-          const formattedProducts = dbProducts.map((p: any) => ({
-            ...p,
-            images: Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images) : p.images?.images || []),
-            details: Array.isArray(p.details) ? p.details : (typeof p.details === 'string' ? JSON.parse(p.details) : p.details?.details || []),
-            reviews: p.reviews || [] 
-          }));
-          setProducts(formattedProducts as unknown as Product[]);
+        // If we didn't get initial products from server, or if we want to refresh:
+        // But since we pass them from layout, we don't strictly need to fetch here unless we want fresh data on mount.
+        // For maximum speed, we just rely on initialProducts!
+        if (initialProducts.length === 0) {
+          const dbProducts = await getProducts();
+          if (dbProducts) {
+            const formattedProducts = dbProducts.map((p: any) => ({
+              ...p,
+              images: Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images) : p.images?.images || []),
+              details: Array.isArray(p.details) ? p.details : (typeof p.details === 'string' ? JSON.parse(p.details) : p.details?.details || []),
+              reviews: p.reviews || [] 
+            }));
+            setProducts(formattedProducts as unknown as Product[]);
+          }
         }
 
         try {
