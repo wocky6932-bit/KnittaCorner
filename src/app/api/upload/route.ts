@@ -11,7 +11,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       onBeforeGenerateToken: async (pathname) => {
         // Here we could check admin auth token if it was passed in cookies
         return {
-          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'video/mp4', 'video/quicktime', 'video/webm'],
           tokenPayload: JSON.stringify({}),
         };
       },

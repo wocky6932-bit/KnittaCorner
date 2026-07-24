@@ -652,6 +652,7 @@ export default function AdminPage() {
                                   setNewProduct({ ...newProduct, image1: uploadedUrl });
                                 } catch (error) {
                                   console.error("Upload failed", error);
+                                  setNewProduct({ ...newProduct, image1: "" });
                                   alert("L'upload a échoué. Vérifiez votre configuration Vercel Blob.");
                                 }
                               }
@@ -682,6 +683,7 @@ export default function AdminPage() {
                                   setNewProduct({ ...newProduct, image2: uploadedUrl });
                                 } catch (error) {
                                   console.error("Upload failed", error);
+                                  setNewProduct({ ...newProduct, image2: "" });
                                   alert("L'upload a échoué. Vérifiez votre configuration Vercel Blob.");
                                 }
                               }
