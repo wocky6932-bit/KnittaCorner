@@ -129,7 +129,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
           </div>
 
           {/* RIGHT SIDE: Information */}
-          <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-5 flex flex-col space-y-6">
             <div className="space-y-4">
               {/* Brand & Stars */}
               <div className="flex items-center justify-between">

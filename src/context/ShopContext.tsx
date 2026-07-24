@@ -51,6 +51,7 @@ interface ShopContextProps {
   register: (name: string, email: string) => boolean;
   logout: () => void;
   addReview: (productId: string, rating: number, comment: string) => void;
+  isLoaded: boolean;
 }
 
 const ShopContext = createContext<ShopContextProps | undefined>(undefined);
@@ -408,7 +409,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        addReview
+        addReview,
+        isLoaded
       }}
     >
       {children}

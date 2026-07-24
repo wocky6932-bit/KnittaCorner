@@ -11,7 +11,7 @@ import { CATEGORIES, BRANDS, SIZES, TARGETS } from "@/data/initialData";
 import { motion, AnimatePresence } from "framer-motion";
 
 function ShopContent() {
-  const { products } = useShop();
+  const { products, isLoaded } = useShop();
   const searchParams = useSearchParams();
   const router = useRouter();
 
