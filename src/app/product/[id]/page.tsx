@@ -196,17 +196,12 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
 
-              {/* Measurements Specs */}
+              {/* Description Section */}
               <div className="border-t border-sand-100 pt-4 space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-charcoal-800">Fiche technique</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {product.details.map((detail, index) => (
-                    <div key={index} className="text-xs text-charcoal-600 flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-terracotta-600"></span>
-                      {detail}
-                    </div>
-                  ))}
-                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-charcoal-800">Description</h3>
+                <p className="text-sm text-charcoal-600 leading-relaxed font-light whitespace-pre-line">
+                  {product.description}
+                </p>
               </div>
 
             </div>
