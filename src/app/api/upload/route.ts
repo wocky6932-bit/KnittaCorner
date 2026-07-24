@@ -12,6 +12,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         // Here we could check admin auth token if it was passed in cookies
         return {
           tokenPayload: JSON.stringify({}),
+          addRandomSuffix: true,
         };
       },
       onUploadCompleted: async ({ blob }) => {
