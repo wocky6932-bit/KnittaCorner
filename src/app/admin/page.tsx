@@ -959,7 +959,11 @@ export default function AdminPage() {
                         <div key={idx} className="flex items-center gap-4 bg-sand-50/50 p-3 rounded-sm border border-sand-100">
                           <div className="relative w-16 h-20 bg-sand-100 rounded-xs overflow-hidden shrink-0">
                             {item.product?.images?.[0] ? (
-                              <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
+                              item.product.images[0].match(/\.(mp4|mov|webm)$/i) || item.product.images[0].startsWith("data:video") ? (
+                                <video src={item.product.images[0]} className="w-full h-full object-cover" muted playsInline />
+                              ) : (
+                                <img src={item.product.images[0]} alt={item.product.name || "Produit"} className="w-full h-full object-cover" />
+                              )
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
                                 <Shirt className="w-6 h-6 text-sand-300" />

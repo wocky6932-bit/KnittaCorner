@@ -37,7 +37,8 @@ export async function getOrders() {
                 rating: true,
                 createdAt: true,
                 updatedAt: true,
-                // OMitting images and details to save bandwidth!
+                images: true,
+                // Omitting details to save bandwidth!
               }
             }
           }
