@@ -11,7 +11,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { motion } from "framer-motion";
 
 export default function Home() {
-  const { products } = useShop();
+  const { products, isLoaded } = useShop();
 
   // Dynamic filter of first 4 new arrivals in stock
   const newArrivals = products.filter((p) => p.isNewArrival && p.inStock).slice(0, 4);
@@ -238,11 +238,17 @@ export default function Home() {
 
             {/* Grid Right */}
             <div className="lg:col-span-9">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {newArrivals.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              {!isLoaded ? (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <div className="h-8 w-8 border-4 border-sand-200 border-t-terracotta-600 rounded-full animate-spin"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {newArrivals.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>
@@ -258,11 +264,17 @@ export default function Home() {
           <div className="h-0.5 w-12 bg-terracotta-600 mx-auto mt-4" />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {bestSellers.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {!isLoaded ? (
+          <div className="flex flex-col items-center justify-center py-10">
+            <div className="h-8 w-8 border-4 border-sand-200 border-t-terracotta-600 rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {bestSellers.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 6. SOURCING PROCESS */}

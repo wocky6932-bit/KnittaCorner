@@ -15,6 +15,8 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const router = useRouter();
+
   // Filters State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tout");
@@ -275,7 +277,12 @@ function ShopContent() {
             </div>
 
             {/* Products catalog grid */}
-            {sortedProducts.length === 0 ? (
+            {!isLoaded ? (
+              <div className="flex flex-col items-center justify-center text-center py-20 px-4 space-y-4">
+                <div className="h-8 w-8 border-4 border-sand-200 border-t-terracotta-600 rounded-full animate-spin"></div>
+                <p className="font-serif text-charcoal-500 font-bold">Chargement de la collection...</p>
+              </div>
+            ) : sortedProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-20 px-4 space-y-4">
                 <div className="rounded-full bg-sand-50 p-6 border border-sand-100">
                   <SlidersHorizontal className="h-10 w-10 text-charcoal-300" />
