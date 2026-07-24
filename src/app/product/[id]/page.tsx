@@ -183,25 +183,14 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                 Équivaut à une taille {product.size} moderne. Vérifiez attentivement les mesures à plat listées ci-dessous avant d&apos;acheter.
               </p>
 
-              {/* Condition Section */}
-              <div className="border-t border-sand-100 pt-4 space-y-2">
-                <div className="text-xs font-bold uppercase tracking-wider text-charcoal-800 flex justify-between">
-                  <span>État du vêtement</span>
-                  <span suppressHydrationWarning className="font-bold text-terracotta-600">{product.condition}</span>
-                </div>
-                <div className="p-3 bg-sand-50 border border-sand-100 rounded-sm">
-                  <p className="text-xs text-charcoal-600 leading-relaxed font-light">
-                    {conditionDescriptions[product.condition]}
-                  </p>
-                </div>
-              </div>
-
               {/* Description Section */}
               <div className="border-t border-sand-100 pt-4 space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-charcoal-800">Description</h3>
-                <p className="text-sm text-charcoal-600 leading-relaxed font-light whitespace-pre-line">
-                  {product.description}
-                </p>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-charcoal-800">Description de l'article</h3>
+                <div className="p-3 bg-sand-50 border border-sand-100 rounded-sm">
+                  <p className="text-xs text-charcoal-600 leading-relaxed font-light whitespace-pre-line">
+                    {product.description || "Aucune description fournie pour cet article."}
+                  </p>
+                </div>
               </div>
 
             </div>
