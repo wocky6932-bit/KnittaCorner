@@ -88,6 +88,22 @@ export async function placeOrderAction(data: OrderData) {
       }
     }
 
+    // Send push notification via ntfy
+    try {
+      const ntfyTopic = process.env.NTFY_TOPIC || "knittacorner_admin";
+      await fetch(`https://ntfy.sh/${ntfyTopic}`, {
+        method: "POST",
+        body: `Nouvelle commande de ${orderData.total} FCFA par ${orderData.customerName} !`,
+        headers: {
+          "Title": "🛒 KnittaCorner : Nouvelle Commande !",
+          "Priority": "high",
+          "Tags": "money_with_wings,partying_face"
+        }
+      });
+    } catch (e) {
+      console.error("Failed to send ntfy push notification", e);
+    }
+
     revalidatePath("/admin");
     return { success: true, order };
   } catch (error) {
