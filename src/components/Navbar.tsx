@@ -284,14 +284,18 @@ export const Navbar = () => {
                         key={item.product.id}
                         className="flex items-center gap-4 border-b border-sand-100 pb-4"
                       >
-                        <div className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-sm border border-sand-200 bg-sand-50">
-                          <Image
-                            src={item.product.images[0]}
-                            alt={item.product.name}
-                            fill
-                            sizes="64px"
-                            className="object-cover"
-                          />
+                        <div className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-sm border border-sand-200 bg-black">
+                          {item.product.images[0]?.match(/\.(mp4|mov|webm)$/i) || item.product.images[0]?.startsWith("data:video") ? (
+                            <video src={item.product.images[0]} className="object-cover w-full h-full" muted />
+                          ) : (
+                            <Image
+                              src={item.product.images[0] || "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80"}
+                              alt={item.product.name}
+                              fill
+                              sizes="64px"
+                              className="object-cover"
+                            />
+                          )}
                         </div>
                         <div className="flex-1">
                           <span className="text-[10px] uppercase font-bold tracking-wider text-terracotta-600">

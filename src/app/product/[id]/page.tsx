@@ -102,16 +102,28 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
           
           {/* LEFT SIDE: Image Gallery */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xs border border-sand-100 bg-sand-50">
-              <Image
-                src={activeImage || (product.images && product.images.length > 0 && product.images[0] ? product.images[0] : "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80")}
-                alt={product.name}
-                fill
-                priority
-                className="object-cover"
-              />
+            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xs border border-sand-100 bg-black">
+              {(activeImage || product.images[0])?.match(/\.(mp4|mov|webm)$/i) || (activeImage || product.images[0])?.startsWith("data:video") ? (
+                <video
+                  src={activeImage || product.images[0]}
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                  controls
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={activeImage || (product.images && product.images.length > 0 && product.images[0] ? product.images[0] : "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80")}
+                  alt={product.name}
+                  fill
+                  priority
+                  className="object-cover"
+                />
+              )}
               {!product.inStock && (
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center pointer-events-none">
                   <span className="font-serif text-2xl font-bold tracking-widest text-white border-4 border-white px-6 py-3 uppercase rotate-[-6deg]">
                     Épuisé
                   </span>
@@ -126,16 +138,20 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                   <button
                     key={idx}
                     onClick={() => setActiveImage(img)}
-                    className={`relative h-20 w-16 overflow-hidden rounded-sm border bg-sand-50 transition-colors ${
+                    className={`relative h-20 w-16 overflow-hidden rounded-sm border bg-black transition-colors ${
                       activeImage === img ? "border-terracotta-600 scale-103" : "border-sand-200 hover:border-charcoal-400"
                     }`}
                   >
-                    <Image
-                      src={img}
-                      alt={`${product.name} vue ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                    />
+                    {img.match(/\.(mp4|mov|webm)$/i) || img.startsWith("data:video") ? (
+                      <video src={img} className="object-cover w-full h-full" muted />
+                    ) : (
+                      <Image
+                        src={img}
+                        alt={`${product.name} vue ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </button>
                 ))}
               </div>

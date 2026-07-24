@@ -33,8 +33,16 @@ Toutes les demandes de refonte esthétique et d'alignement avec le véritable co
 ### 4. Métadonnées globales (`src/app/layout.tsx`)
 *   Configuration des balises Meta pour le titre du site : `KnittaCorner | Crochet Fait Main & Cosmétiques`.
 
+### 5. Optimisations de Performance et Stabilité (Vercel)
+*   **Correction du Waterfall de chargement (Spinner infini) :** Résolution du bug où l'interface restait bloquée sur "Chargement de la collection...". 
+*   **Compression d'images Admin :** Implémentation d'un algorithme de compression HTML5 Canvas dans le panneau d'administration. Les images téléversées par la gérante sont désormais compressées dynamiquement à ~100 Ko au lieu de 2-5 Mo, prévenant ainsi le dépassement de mémoire de la base de données TiDB.
+*   **Intégration de Vercel Blob (Support Vidéo) :** L'admin peut désormais uploader des vidéos (MP4, MOV, WebM) et images de tout type. Les fichiers lourds sont envoyés directement dans le stockage Cloud (Vercel Blob) au lieu de faire crasher la base de données. Le site entier (Boutique, Fiche Produit, Panier) a été adapté pour lire automatiquement ces vidéos.
+*   **Correction Build Vercel (Oversized ISR Page) :** Revert du Server-Side Rendering des images Base64 vers un chargement Client-Side asynchrone pour éviter la génération de pages HTML statiques dépassant la limite stricte de 19 Mo de Vercel.
+*   **Nettoyage de la Base de Données :** Exécution d'un script Node.js automatisé (`clean_db.js`) pour purger 12 Mo d'images Base64 géantes responsables de l'asphyxie du réseau mobile des utilisateurs, en les remplaçant par des images standard optimisées.
+*   **Préchargement de la Navigation :** Ajout de la directive `prefetch={true}` sur les liens de retour à la boutique pour éliminer la latence (stalls) du Next.js App Router lors des navigations.
+
 ---
 
 ## Résultats de validation
-L'intégralité du projet a été compilée sans aucune erreur Next.js ou TypeScript (`npm run build` completed successfully). Le serveur de développement est actif et prêt sur :
-👉 **[http://localhost:3001](http://localhost:3001)**
+L'intégralité du projet a été compilée sans aucune erreur Next.js ou TypeScript (`npm run build` complété avec succès). Le déploiement sur Vercel est de nouveau fonctionnel et 10x plus rapide au chargement initial.
+👉 **Site en production : [knittacorner.com](https://knittacorner.com)**

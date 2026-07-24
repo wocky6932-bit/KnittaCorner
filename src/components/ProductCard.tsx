@@ -47,13 +47,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Product Image Panel */}
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-sand-50">
           <Link href={`/product/${product.id}`}>
-            <Image
-              src={product.images && product.images.length > 0 && product.images[0] ? product.images[0] : "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80"}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 50vw, 25vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-103"
-            />
+            {product.images && product.images.length > 0 && product.images[0] ? (
+              product.images[0].match(/\.(mp4|mov|webm)$/i) || product.images[0].startsWith("data:video") ? (
+                <video
+                  src={product.images[0]}
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+                />
+              ) : (
+                <Image
+                  src={product.images[0]}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 640px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+                />
+              )
+            ) : (
+              <Image
+                src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80"
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 50vw, 25vw"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+              />
+            )}
           </Link>
 
           {/* Sold out overlay */}
@@ -176,13 +197,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </button>
 
                 {/* Left Side: Image */}
-                <div className="w-full md:w-1/2 aspect-square md:aspect-auto relative bg-sand-50 min-h-[300px]">
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="w-full md:w-1/2 aspect-square md:aspect-auto relative bg-black min-h-[300px]">
+                  {product.images[0]?.match(/\.(mp4|mov|webm)$/i) || product.images[0]?.startsWith("data:video") ? (
+                    <video
+                      src={product.images[0]}
+                      muted
+                      playsInline
+                      autoPlay
+                      loop
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={product.images[0] || "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80"}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  )}
                   <div className="absolute left-4 top-4 flex flex-col gap-1 items-start">
                     <span className="bg-charcoal-950 text-white text-[9px] font-bold px-2 py-1 uppercase tracking-wider rounded-xs">
                       {product.target}

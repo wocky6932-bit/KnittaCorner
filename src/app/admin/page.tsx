@@ -25,6 +25,7 @@ import { Product, CATEGORIES, BRANDS, SIZES, CONDITIONS, TARGETS } from "@/data/
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
+import { upload } from '@vercel/blob/client';
 
 export default function AdminPage() {
   const ADMIN_PASSWORD = "Ma12344321";
@@ -128,45 +129,18 @@ export default function AdminPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // IMAGE COMPRESSION HELPER
-  const compressImage = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new window.Image();
-        img.src = event.target?.result as string;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL("image/jpeg", 0.7)); // 70% quality JPEG
-          } else {
-            resolve(event.target?.result as string); // fallback
-          }
-        };
-        img.onerror = (error) => reject(error);
-      };
-    });
+  // VERCEL BLOB UPLOAD HELPER
+  const uploadToBlob = async (file: File): Promise<string> => {
+    try {
+      const newBlob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload',
+      });
+      return newBlob.url;
+    } catch (error) {
+      console.error("Vercel Blob upload failed:", error);
+      throw error;
+    }
   };
 
   // FORM SUBMIT HANDLER
@@ -657,21 +631,28 @@ export default function AdminPage() {
                         <div className="space-y-1">
                           <label className="font-bold text-charcoal-800 uppercase">Photo Principale</label>
                           {newProduct.image1 && (
-                            <div className="relative w-16 h-20 mb-2 border border-sand-200 rounded-xs overflow-hidden">
-                              <Image src={newProduct.image1} alt="Photo principale" fill className="object-cover" />
+                            <div className="relative w-16 h-20 mb-2 border border-sand-200 rounded-xs overflow-hidden bg-black flex items-center justify-center">
+                              {newProduct.image1.match(/\.(mp4|mov|webm)$/i) || newProduct.image1.startsWith("data:video") ? (
+                                <video src={newProduct.image1} className="w-full h-full object-cover" muted playsInline />
+                              ) : (
+                                <Image src={newProduct.image1} alt="Photo principale" fill className="object-cover" />
+                              )}
                             </div>
                           )}
                           <input
                             type="file"
-                            accept="image/*"
+                            accept="image/*,video/*"
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
                                 try {
-                                  const compressedDataUrl = await compressImage(file);
-                                  setNewProduct({ ...newProduct, image1: compressedDataUrl });
+                                  // Indicate uploading state visually (optional, can just wait)
+                                  setNewProduct({ ...newProduct, image1: "Uploading..." });
+                                  const uploadedUrl = await uploadToBlob(file);
+                                  setNewProduct({ ...newProduct, image1: uploadedUrl });
                                 } catch (error) {
-                                  console.error("Image compression failed", error);
+                                  console.error("Upload failed", error);
+                                  alert("L'upload a échoué. Vérifiez votre configuration Vercel Blob.");
                                 }
                               }
                             }}
@@ -681,21 +662,27 @@ export default function AdminPage() {
                         <div className="space-y-1">
                           <label className="font-bold text-charcoal-800 uppercase">Photo de Détail</label>
                           {newProduct.image2 && (
-                            <div className="relative w-16 h-20 mb-2 border border-sand-200 rounded-xs overflow-hidden">
-                              <Image src={newProduct.image2} alt="Photo de détail" fill className="object-cover" />
+                            <div className="relative w-16 h-20 mb-2 border border-sand-200 rounded-xs overflow-hidden bg-black flex items-center justify-center">
+                              {newProduct.image2.match(/\.(mp4|mov|webm)$/i) || newProduct.image2.startsWith("data:video") ? (
+                                <video src={newProduct.image2} className="w-full h-full object-cover" muted playsInline />
+                              ) : (
+                                <Image src={newProduct.image2} alt="Photo de détail" fill className="object-cover" />
+                              )}
                             </div>
                           )}
                           <input
                             type="file"
-                            accept="image/*"
+                            accept="image/*,video/*"
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
                                 try {
-                                  const compressedDataUrl = await compressImage(file);
-                                  setNewProduct({ ...newProduct, image2: compressedDataUrl });
+                                  setNewProduct({ ...newProduct, image2: "Uploading..." });
+                                  const uploadedUrl = await uploadToBlob(file);
+                                  setNewProduct({ ...newProduct, image2: uploadedUrl });
                                 } catch (error) {
-                                  console.error("Image compression failed", error);
+                                  console.error("Upload failed", error);
+                                  alert("L'upload a échoué. Vérifiez votre configuration Vercel Blob.");
                                 }
                               }
                             }}
