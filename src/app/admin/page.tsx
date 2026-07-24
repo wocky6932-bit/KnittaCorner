@@ -128,6 +128,47 @@ export default function AdminPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // IMAGE COMPRESSION HELPER
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", 0.7)); // 70% quality JPEG
+          } else {
+            resolve(event.target?.result as string); // fallback
+          }
+        };
+        img.onerror = (error) => reject(error);
+      };
+    });
+  };
+
   // FORM SUBMIT HANDLER
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -623,14 +664,15 @@ export default function AdminPage() {
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setNewProduct({ ...newProduct, image1: reader.result as string });
-                                };
-                                reader.readAsDataURL(file);
+                                try {
+                                  const compressedDataUrl = await compressImage(file);
+                                  setNewProduct({ ...newProduct, image1: compressedDataUrl });
+                                } catch (error) {
+                                  console.error("Image compression failed", error);
+                                }
                               }
                             }}
                             className="w-full border border-sand-200 bg-[#FCFAF7] p-1.5 rounded-xs text-xs file:mr-4 file:py-1 file:px-3 file:rounded-sm file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-charcoal-900 file:text-white hover:file:bg-terracotta-600 cursor-pointer"
@@ -646,14 +688,15 @@ export default function AdminPage() {
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setNewProduct({ ...newProduct, image2: reader.result as string });
-                                };
-                                reader.readAsDataURL(file);
+                                try {
+                                  const compressedDataUrl = await compressImage(file);
+                                  setNewProduct({ ...newProduct, image2: compressedDataUrl });
+                                } catch (error) {
+                                  console.error("Image compression failed", error);
+                                }
                               }
                             }}
                             className="w-full border border-sand-200 bg-[#FCFAF7] p-1.5 rounded-xs text-xs file:mr-4 file:py-1 file:px-3 file:rounded-sm file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-charcoal-900 file:text-white hover:file:bg-terracotta-600 cursor-pointer"
