@@ -16,6 +16,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
 
   const product = products.find((p) => p.id === id);
   const [activeImage, setActiveImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState<string>("");
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState(false);
@@ -57,7 +58,12 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
   }
 
   const favorited = isWishlisted(product.id);
-  const inCart = cart.some((item) => item.product.id === product.id);
+  const currentImage = activeImage || (product.images.length > 0 ? product.images[0] : "");
+  const inCart = cart.some((item) => 
+    item.product.id === product.id && 
+    item.selectedSize === selectedSize &&
+    item.selectedImage === currentImage
+  );
 
   // Recommendations: products in same category (excl current)
   const relatedProducts = products
@@ -131,29 +137,32 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
               )}
             </div>
 
-            {/* Thumbnail Strip */}
+            {/* Thumbnail Strip (Couleur/Variante) */}
             {product.images.length > 1 && (
-              <div className="flex gap-3">
-                {product.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImage(img)}
-                    className={`relative h-20 w-16 overflow-hidden rounded-sm border bg-black transition-colors ${
-                      activeImage === img ? "border-terracotta-600 scale-103" : "border-sand-200 hover:border-charcoal-400"
-                    }`}
-                  >
-                    {img.match(/\.(mp4|mov|webm)$/i) || img.startsWith("data:video") ? (
-                      <video src={img} className="object-cover w-full h-full" muted />
-                    ) : (
-                      <Image
-                        src={img}
-                        alt={`${product.name} vue ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
-                  </button>
-                ))}
+              <div className="space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-charcoal-800 block mt-2">Choisir l&apos;image / variante</span>
+                <div className="flex flex-wrap gap-3">
+                  {product.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImage(img)}
+                      className={`relative h-20 w-16 overflow-hidden rounded-sm border bg-black transition-colors ${
+                        (activeImage || product.images[0]) === img ? "border-terracotta-600 scale-103" : "border-sand-200 hover:border-charcoal-400"
+                      }`}
+                    >
+                      {img.match(/\.(mp4|mov|webm)$/i) || img.startsWith("data:video") ? (
+                        <video src={img} className="object-cover w-full h-full" muted />
+                      ) : (
+                        <Image
+                          src={img}
+                          alt={`${product.name} vue ${idx + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -202,15 +211,27 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                   </span>
                 </div>
                 
-                <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-charcoal-800 block">Taille disponible</span>
-                  <span className="inline-block border-2 border-charcoal-900 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 bg-white rounded-xs">
-                    {product.size}
-                  </span>
+                <div className="space-y-2 col-span-2 mt-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-charcoal-800 block">Choisir la Taille *</span>
+                  <div className="flex flex-wrap gap-2">
+                    {["S", "M", "L", "XL"].map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`border-2 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-xs transition-colors ${
+                          selectedSize === size 
+                            ? "border-charcoal-900 bg-charcoal-900 text-white" 
+                            : "border-sand-200 bg-white text-charcoal-900 hover:border-charcoal-900"
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               <p className="text-[10px] text-charcoal-450 font-light mt-2 leading-relaxed">
-                Équivaut à une taille {product.size} moderne. Vérifiez attentivement les mesures à plat listées ci-dessous avant d&apos;acheter.
+                Vérifiez attentivement que la taille sélectionnée vous correspond.
               </p>
 
               {/* Description Section */}
@@ -229,7 +250,15 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
             <div className="border-t border-sand-100 pt-6 space-y-3">
               <div className="flex gap-4">
                 <button
-                  onClick={() => product.inStock && addToCart(product)}
+                  onClick={() => {
+                    if (!selectedSize) {
+                      alert("Veuillez choisir une taille (S, M, L, XL) avant d'ajouter au panier.");
+                      return;
+                    }
+                    if (product.inStock) {
+                      addToCart(product, 1, selectedSize, currentImage);
+                    }
+                  }}
                   disabled={!product.inStock || inCart}
                   className="flex-1 flex items-center justify-center gap-2 rounded-sm py-4 text-xs font-bold uppercase tracking-widest text-white hover:bg-terracotta-600 disabled:bg-charcoal-300 disabled:cursor-not-allowed transition-colors bg-charcoal-900 shadow-sm"
                 >

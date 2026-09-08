@@ -41,6 +41,11 @@ Toutes les demandes de refonte esthétique et d'alignement avec le véritable co
 *   **Nettoyage de la Base de Données :** Exécution d'un script Node.js automatisé (`clean_db.js`) pour purger 12 Mo d'images Base64 géantes responsables de l'asphyxie du réseau mobile des utilisateurs, en les remplaçant par des images standard optimisées.
 *   **Préchargement de la Navigation :** Ajout de la directive `prefetch={true}` sur les liens de retour à la boutique pour éliminer la latence (stalls) du Next.js App Router lors des navigations.
 
+### 6. Fonctionnalités E-commerce (Tailles, Variantes et WhatsApp)
+*   **Choix des Tailles :** Le client doit désormais choisir explicitement sa taille (S, M, L, XL) avant d'ajouter un article au panier.
+*   **Sélection des Variantes (Images) :** Lorsqu'un article possède plusieurs images, l'image affichée en grand (cliquée par l'utilisateur) devient automatiquement la variante (couleur/modèle) sélectionnée pour le panier.
+*   **Validation de commande par WhatsApp :** La validation finale du panier génère désormais un récapitulatif textuel détaillé et redirige l'utilisateur vers WhatsApp (au +221 77 170 48 95) pour finaliser le paiement avec la gérante, tout en conservant l'historique de la commande dans la base de données.
+
 ---
 
 ## Résultats de validation

@@ -8,6 +8,8 @@ import { getOrders, placeOrderAction, updateOrderStatusAction } from "@/actions/
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedSize?: string;
+  selectedImage?: string;
 }
 
 export interface Order {
@@ -36,7 +38,7 @@ interface ShopContextProps {
   wishlist: string[];
   orders: Order[];
   currentUser: User | null;
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedImage?: string) => void;
   removeFromCart: (productId: string) => void;
   updateCartItemQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -187,17 +189,22 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Cart Operations
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1, selectedSize?: string, selectedImage?: string) => {
     if (!product.inStock || product.stockCount <= 0) return;
     setCart((prev) => {
-      const existingIndex = prev.findIndex((item) => item.product.id === product.id);
+      // Check if same product, same size, same image exists in cart
+      const existingIndex = prev.findIndex((item) => 
+        item.product.id === product.id && 
+        item.selectedSize === selectedSize &&
+        item.selectedImage === selectedImage
+      );
       if (existingIndex >= 0) {
         const newCart = [...prev];
         const newQuantity = Math.min(newCart[existingIndex].quantity + quantity, product.stockCount);
         newCart[existingIndex] = { ...newCart[existingIndex], quantity: newQuantity };
         return newCart;
       }
-      return [...prev, { product, quantity: Math.min(quantity, product.stockCount) }];
+      return [...prev, { product, quantity: Math.min(quantity, product.stockCount), selectedSize, selectedImage }];
     });
   };
 

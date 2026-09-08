@@ -34,6 +34,23 @@ export default function CheckoutPage() {
 
     try {
       const order = await placeOrder(shippingInfo);
+      
+      let text = `Bonjour KnittaCorner !%0AJe souhaite valider ma commande :%0A%0A`;
+      text += `*Destinataire:* ${shippingInfo.firstName} ${shippingInfo.lastName}%0A`;
+      text += `*Téléphone:* ${shippingInfo.phone}%0A`;
+      text += `*Adresse:* ${shippingInfo.address}%0A%0A`;
+      text += `*Articles:*%0A`;
+      cart.forEach(item => {
+        text += `- ${item.quantity}x ${item.product.name} (Taille: ${item.selectedSize || item.product.size}) - ${item.product.price} FCFA%0A`;
+      });
+      text += `%0A*Sous-total:* ${cartTotal} FCFA%0A`;
+      text += `*Livraison:* ${shippingFee} FCFA%0A`;
+      text += `*Total à payer:* ${grandTotal} FCFA%0A%0A`;
+      text += `Merci !`;
+
+      const whatsappUrl = `https://wa.me/221771704895?text=${text}`;
+      window.open(whatsappUrl, '_blank');
+
       setPlacedOrder(order);
     } catch (error) {
       console.error("Failed to place order:", error);
@@ -219,24 +236,31 @@ export default function CheckoutPage() {
 
                 {/* Items list */}
                 <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2 scrollbar-thin">
-                  {cart.map((item) => (
-                    <div key={item.product.id} className="flex gap-3 items-center">
-                      <div className="relative h-14 w-11 flex-shrink-0 overflow-hidden rounded-xs border border-sand-200 bg-sand-50">
-                        <Image
-                          src={item.product.images[0]}
-                          alt={item.product.name}
-                          fill
-                          sizes="44px"
-                          className="object-cover"
-                        />
+                  {cart.map((item) => {
+                    const imgSrc = item.selectedImage || item.product.images[0];
+                    return (
+                      <div key={item.product.id + (item.selectedSize || '') + (item.selectedImage || '')} className="flex gap-3 items-center">
+                        <div className="relative h-14 w-11 flex-shrink-0 overflow-hidden rounded-xs border border-sand-200 bg-sand-50">
+                          {imgSrc?.match(/\.(mp4|mov|webm)$/i) || imgSrc?.startsWith("data:video") ? (
+                            <video src={imgSrc} className="object-cover w-full h-full" muted />
+                          ) : (
+                            <Image
+                              src={imgSrc}
+                              alt={item.product.name}
+                              fill
+                              sizes="44px"
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-serif text-xs font-semibold text-charcoal-900 line-clamp-1">{item.product.name}</h4>
+                          <p className="text-[10px] text-charcoal-400 mt-0.5">Qté : {item.quantity} | Taille : {item.selectedSize || item.product.size} | Marque : {item.product.brand}</p>
+                        </div>
+                        <span className="text-xs font-bold text-charcoal-950 text-right">{item.product.price * item.quantity} FCFA</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-serif text-xs font-semibold text-charcoal-900 line-clamp-1">{item.product.name}</h4>
-                        <p className="text-[10px] text-charcoal-400 mt-0.5">Qté : {item.quantity} | Taille : {item.product.size} | Marque : {item.product.brand}</p>
-                      </div>
-                      <span className="text-xs font-bold text-charcoal-950 text-right">{item.product.price * item.quantity} FCFA</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Pricing Summary */}
@@ -269,10 +293,10 @@ export default function CheckoutPage() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Autorisation...
+                        Ouverture WhatsApp...
                       </span>
                     ) : (
-                      `Régler la Commande • ${grandTotal} FCFA`
+                      `Valider sur WhatsApp • ${grandTotal} FCFA`
                     )}
                   </button>
                 </div>

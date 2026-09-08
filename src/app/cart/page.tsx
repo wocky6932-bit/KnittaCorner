@@ -52,16 +52,24 @@ export default function CartPage() {
               <div className="border border-sand-100 rounded-sm bg-white divide-y divide-sand-100 shadow-3xs">
                 {cart.map((item) => (
                   <div key={item.product.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                    {/* Image */}
-                    <div className="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded-sm border border-sand-200 bg-sand-50">
-                      <Image
-                        src={item.product.images[0]}
-                        alt={item.product.name}
-                        fill
-                        sizes="80px"
-                        className="object-cover"
-                      />
-                    </div>
+                      {/* Image */}
+                      <div className="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded-sm border border-sand-200 bg-sand-50">
+                        {(() => {
+                          const imgSrc = item.selectedImage || item.product.images[0];
+                          if (imgSrc?.match(/\.(mp4|mov|webm)$/i) || imgSrc?.startsWith("data:video")) {
+                            return <video src={imgSrc} className="object-cover w-full h-full" muted />;
+                          }
+                          return (
+                            <Image
+                              src={imgSrc}
+                              alt={item.product.name}
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                            />
+                          );
+                        })()}
+                      </div>
 
                     {/* Details */}
                     <div className="flex-1 min-w-0">
@@ -76,7 +84,7 @@ export default function CartPage() {
                         </h3>
                       </Link>
                       <div className="flex items-center gap-3 mt-1.5 text-xs text-charcoal-400">
-                        <span>Taille : <strong className="text-charcoal-700 font-semibold">{item.product.size}</strong></span>
+                        <span>Taille : <strong className="text-charcoal-700 font-semibold">{item.selectedSize || item.product.size}</strong></span>
                         <span className="h-3 w-px bg-sand-200"></span>
                         <span>État : <strong className="text-charcoal-700 font-semibold">{item.product.condition}</strong></span>
                       </div>
