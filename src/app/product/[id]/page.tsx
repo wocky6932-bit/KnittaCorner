@@ -279,8 +279,8 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
               <div className="grid grid-cols-3 gap-2 pt-4 text-center">
                 <div className="p-3 bg-white border border-sand-100 rounded-sm flex flex-col items-center justify-center space-y-1">
                   <Truck className="h-4 w-4 text-charcoal-500" />
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-charcoal-800">Envoi Éco</span>
-                  <span className="text-[8px] text-charcoal-400">Carbone Neutre</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-charcoal-800">Livraison</span>
+                  <span className="text-[8px] text-charcoal-400">3 à 5 jours</span>
                 </div>
                 <div className="p-3 bg-white border border-sand-100 rounded-sm flex flex-col items-center justify-center space-y-1">
                   <Shield className="h-4 w-4 text-charcoal-500" />

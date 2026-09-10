@@ -222,7 +222,7 @@ export default function CheckoutPage() {
                 </h2>
 
                 <div className="p-4 bg-sand-50 border border-sand-100 text-xs text-charcoal-600 rounded-sm leading-relaxed">
-                  <strong>Paiement sécurisé à la réception :</strong> Vous réglerez votre commande en espèces (ou via Wave/Orange Money) directement au livreur lors de la réception de votre colis.
+                  <strong>Paiement sécurisé à la réception :</strong> Vous réglerez votre commande en espèces (ou via Wave/Orange Money) directement au livreur lors de la réception de votre colis. <strong>Délai de livraison estimé : 3 à 5 jours.</strong>
                 </div>
               </div>
             </div>
