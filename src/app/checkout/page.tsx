@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, CheckCircle, CreditCard, ShoppingBag, Truck } from "lucide-react";
+import { ArrowLeft, CheckCircle, CreditCard, ShoppingBag, Truck, Smartphone } from "lucide-react";
 import { useShop, Order } from "@/context/ShopContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -21,6 +21,7 @@ export default function CheckoutPage() {
 
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const shippingFee = 2000;
@@ -29,28 +30,15 @@ export default function CheckoutPage() {
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
+    if (!paymentMethod) {
+      alert("Veuillez choisir un moyen de paiement (Wave, Orange Money ou MTN).");
+      return;
+    }
 
     setLoading(true);
 
     try {
       const order = await placeOrder(shippingInfo);
-      
-      let text = `Bonjour KnittaCorner !%0AJe souhaite valider ma commande :%0A%0A`;
-      text += `*Destinataire:* ${shippingInfo.firstName} ${shippingInfo.lastName}%0A`;
-      text += `*Téléphone:* ${shippingInfo.phone}%0A`;
-      text += `*Adresse:* ${shippingInfo.address}%0A%0A`;
-      text += `*Articles:*%0A`;
-      cart.forEach(item => {
-        text += `- ${item.quantity}x ${item.product.name} (Taille: ${item.selectedSize || item.product.size}) - ${item.product.price} FCFA%0A`;
-      });
-      text += `%0A*Sous-total:* ${cartTotal} FCFA%0A`;
-      text += `*Livraison:* ${shippingFee} FCFA%0A`;
-      text += `*Total à payer:* ${grandTotal} FCFA%0A%0A`;
-      text += `Merci !`;
-
-      const whatsappUrl = `https://wa.me/221771704895?text=${text}`;
-      window.open(whatsappUrl, '_blank');
-
       setPlacedOrder(order);
     } catch (error) {
       console.error("Failed to place order:", error);
@@ -98,8 +86,8 @@ export default function CheckoutPage() {
               </span>
             </div>
 
-            <div className="p-3 bg-sand-50 border border-sand-100 text-[10px] text-charcoal-500 rounded-sm text-center">
-              Un SMS de confirmation a été envoyé au <strong>{placedOrder.customerPhone}</strong>.
+            <div className="p-3 bg-amber-50 border border-amber-200 text-[10px] text-amber-800 rounded-sm text-center">
+              Votre commande a été enregistrée. Nous la validerons dès réception de votre paiement via <strong>{paymentMethod || "mobile money"}</strong>.
             </div>
           </div>
 
@@ -215,15 +203,45 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Payment Details card */}
+              {/* Payment Method card */}
               <div className="bg-white border border-sand-100 rounded-sm p-6 sm:p-8 space-y-4 shadow-3xs">
                 <h2 className="font-serif text-lg font-semibold text-charcoal-900 flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-terracotta-600" /> Paiement à la livraison
+                  <Smartphone className="h-5 w-5 text-terracotta-600" /> Moyen de paiement
                 </h2>
 
-                <div className="p-4 bg-sand-50 border border-sand-100 text-xs text-charcoal-600 rounded-sm leading-relaxed">
-                  <strong>Paiement sécurisé à la réception :</strong> Vous réglerez votre commande en espèces (ou via Wave/Orange Money) directement au livreur lors de la réception de votre colis. <strong>Délai de livraison estimé : 3 à 5 jours.</strong>
+                <div className="grid grid-cols-3 gap-3">
+                  {["Wave", "Orange Money", "MTN"].map((method) => (
+                    <button
+                      key={method}
+                      type="button"
+                      onClick={() => setPaymentMethod(method)}
+                      className={`border-2 rounded-sm py-3 px-2 text-xs font-bold uppercase tracking-wider transition-all text-center ${
+                        paymentMethod === method
+                          ? "border-orange-500 bg-orange-50 text-orange-700"
+                          : "border-sand-200 bg-white text-charcoal-600 hover:border-orange-300"
+                      }`}
+                    >
+                      {method}
+                    </button>
+                  ))}
                 </div>
+
+                {paymentMethod && (
+                  <div className="p-4 bg-orange-50 border border-orange-200 rounded-sm space-y-2">
+                    <p className="text-xs font-bold text-orange-800 flex items-center gap-1.5">
+                      📱 Instruction de paiement manuel
+                    </p>
+                    <p className="text-xs text-orange-700 leading-relaxed">
+                      Veuillez envoyer le montant de <strong className="text-orange-900">{grandTotal} FCFA</strong> au numéro suivant : <strong className="text-orange-900">+221 77 170 48 95</strong>.
+                    </p>
+                    <p className="text-xs text-orange-700 leading-relaxed">
+                      Cliquez sur <strong>&quot;Confirmer la commande&quot;</strong> après avoir fait le dépôt. Nous validerons votre commande dès réception du transfert.
+                    </p>
+                    <p className="text-[10px] text-orange-500 mt-1">
+                      Délai de livraison estimé : 3 à 5 jours.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -288,15 +306,14 @@ export default function CheckoutPage() {
                   >
                     {loading ? (
                       <span className="flex items-center gap-2">
-                        {/* Simple Spinner */}
                         <svg className="animate-spin h-4.5 w-4.5 text-white" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Ouverture WhatsApp...
+                        Enregistrement...
                       </span>
                     ) : (
-                      `Valider sur WhatsApp • ${grandTotal} FCFA`
+                      "Confirmer la commande"
                     )}
                   </button>
                 </div>
