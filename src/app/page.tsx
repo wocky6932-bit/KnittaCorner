@@ -138,7 +138,7 @@ export default function Home() {
           <style dangerouslySetInnerHTML={{__html: `
             .hero-bg-container {
               background-image: url('/tel.png');
-              background-size: cover;
+              background-size: contain;
               background-position: center center;
               background-repeat: no-repeat;
             }
