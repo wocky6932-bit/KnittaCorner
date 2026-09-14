@@ -214,24 +214,30 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                 <div className="space-y-2 col-span-2 mt-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-charcoal-800 block">Choisir la Taille *</span>
                   <div className="flex flex-wrap gap-2">
-                    {["S", "M", "L", "XL"].map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`border-2 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-xs transition-colors ${
-                          selectedSize === size 
-                            ? "border-charcoal-900 bg-charcoal-900 text-white" 
-                            : "border-sand-200 bg-white text-charcoal-900 hover:border-charcoal-900"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                    {["S", "M", "L", "XL"].map((size) => {
+                      const isAvailable = product.size?.toUpperCase() === size || product.size?.toLowerCase() === size.toLowerCase();
+                      return (
+                        <button
+                          key={size}
+                          onClick={() => isAvailable && setSelectedSize(size)}
+                          disabled={!isAvailable}
+                          className={`border-2 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-xs transition-colors ${
+                            !isAvailable
+                              ? "border-sand-100 bg-sand-50 text-charcoal-250 cursor-not-allowed line-through"
+                              : selectedSize === size 
+                                ? "border-charcoal-900 bg-charcoal-900 text-white" 
+                                : "border-sand-200 bg-white text-charcoal-900 hover:border-charcoal-900"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
               <p className="text-[10px] text-charcoal-450 font-light mt-2 leading-relaxed">
-                Vérifiez attentivement que la taille sélectionnée vous correspond.
+                Seule la taille disponible est sélectionnable.
               </p>
 
               {/* Description Section */}
