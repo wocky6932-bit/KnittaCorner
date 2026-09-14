@@ -120,11 +120,7 @@ export default function Home() {
 
       {/* 1. HERO SECTION */}
       <section
-        className="relative w-full flex items-center overflow-hidden bg-charcoal-900"
-        style={{
-          height: '100svh',
-          minHeight: '600px',
-        }}
+        className="relative w-full flex items-center overflow-hidden bg-charcoal-900 h-[65svh] min-h-[450px] md:h-[100svh] md:min-h-[600px]"
       >
         <div 
           className="absolute inset-0 w-full h-full"
@@ -138,7 +134,7 @@ export default function Home() {
           <style dangerouslySetInnerHTML={{__html: `
             .hero-bg-container {
               background-image: url('/tel.png');
-              background-size: contain;
+              background-size: cover;
               background-position: center center;
               background-repeat: no-repeat;
             }
