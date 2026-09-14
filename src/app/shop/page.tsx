@@ -7,7 +7,7 @@ import { useShop } from "@/context/ShopContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { CATEGORIES, BRANDS, SIZES, TARGETS } from "@/data/initialData";
+import { TARGETS } from "@/data/initialData";
 import { motion, AnimatePresence } from "framer-motion";
 
 function ShopContent() {
@@ -24,6 +24,11 @@ function ShopContent() {
   const [priceRange, setPriceRange] = useState(50000);
   const [sortBy, setSortBy] = useState("newest");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Dynamic filters derived from actual products
+  const CATEGORIES = ["Tout", ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
+  const BRANDS = ["Tout", ...Array.from(new Set(products.map(p => p.brand).filter(Boolean)))];
+  const SIZES = ["Tout", "S", "M", "L", "XL"];
 
   // Sync initial filters with URL parameters if present
   useEffect(() => {
