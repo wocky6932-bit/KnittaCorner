@@ -955,14 +955,17 @@ export default function AdminPage() {
                   <h4 className="text-[10px] font-bold uppercase tracking-wider text-charcoal-400 mb-4">Articles ({viewOrder.items?.length || 0})</h4>
                   <div className="space-y-3">
                     {viewOrder.items && viewOrder.items.length > 0 ? (
-                      viewOrder.items.map((item, idx) => (
+                      viewOrder.items.map((item, idx) => {
+                        const displayImage = (item as any).selectedImage || item.product?.images?.[0];
+                        const displaySize = (item as any).selectedSize || item.product?.size || "-";
+                        return (
                         <div key={idx} className="flex items-center gap-4 bg-sand-50/50 p-3 rounded-sm border border-sand-100">
                           <div className="relative w-16 h-20 bg-sand-100 rounded-xs overflow-hidden shrink-0">
-                            {item.product?.images?.[0] ? (
-                              item.product.images[0].match(/\.(mp4|mov|webm)$/i) || item.product.images[0].startsWith("data:video") ? (
-                                <video src={item.product.images[0]} className="w-full h-full object-cover" muted playsInline />
+                            {displayImage ? (
+                              displayImage.match(/\.(mp4|mov|webm)$/i) || displayImage.startsWith("data:video") ? (
+                                <video src={displayImage} className="w-full h-full object-cover" muted playsInline />
                               ) : (
-                                <img src={item.product.images[0]} alt={item.product.name || "Produit"} className="w-full h-full object-cover" />
+                                <img src={displayImage} alt={item.product?.name || "Produit"} className="w-full h-full object-cover" />
                               )
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
@@ -973,13 +976,14 @@ export default function AdminPage() {
                           <div className="flex-1 min-w-0">
                             <span className="text-[9px] font-bold text-terracotta-600 uppercase tracking-wider block mb-0.5">{item.product?.brand || "Inconnu"}</span>
                             <h5 className="text-sm font-semibold text-charcoal-900 truncate">{item.product?.name || "Article indisponible"}</h5>
-                            <p className="text-xs text-charcoal-500 mt-1">Taille: {item.product?.size || "-"}</p>
+                            <p className="text-xs text-charcoal-500 mt-1">Taille choisie: <strong className="text-charcoal-800">{displaySize}</strong></p>
                           </div>
                           <div className="text-right shrink-0">
                             <p className="text-sm font-bold text-charcoal-900">{item.product?.price || 0} FCFA</p>
                           </div>
                         </div>
-                      ))
+                        );
+                      })
                     ) : (
                       <p className="text-xs text-charcoal-500 italic">Aucun détail d'article disponible pour cette commande (ancienne version).</p>
                     )}
