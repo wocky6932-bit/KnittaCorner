@@ -31,7 +31,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (cart.length === 0) return;
     if (!paymentMethod) {
-      alert("Veuillez choisir un moyen de paiement (Wave, Orange Money ou MTN).");
+      alert("Veuillez choisir un moyen de paiement (Wave ou Orange Money).");
       return;
     }
 
@@ -209,19 +209,25 @@ export default function CheckoutPage() {
                   <Smartphone className="h-5 w-5 text-terracotta-600" /> Moyen de paiement
                 </h2>
 
-                <div className="grid grid-cols-3 gap-3">
-                  {["Wave", "Orange Money", "MTN"].map((method) => (
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { id: "Wave", img: "https://play-lh.googleusercontent.com/Ww3DM3gzdtQM-NW_fvF_T3Qx9b3ibO_xS6me6N1zr3kV3nwqtkLNiTZ9mPuNU76mFYIxapl2jF5sJRaTQy_GbQ=s0-br30" },
+                    { id: "Orange Money", img: "https://play-lh.googleusercontent.com/lR-IULf2v_VRTwdW_E08M6892i62IHtAmjBsTDRGZjevJHZRtxcK0VI-MtsQplJMn0_yYLu9jJDgPqfeU2BB=s0-br30" }
+                  ].map((method) => (
                     <button
-                      key={method}
+                      key={method.id}
                       type="button"
-                      onClick={() => setPaymentMethod(method)}
-                      className={`border-2 rounded-sm py-3 px-2 text-xs font-bold uppercase tracking-wider transition-all text-center ${
-                        paymentMethod === method
-                          ? "border-orange-500 bg-orange-50 text-orange-700"
-                          : "border-sand-200 bg-white text-charcoal-600 hover:border-orange-300"
+                      onClick={() => setPaymentMethod(method.id)}
+                      className={`border-2 rounded-sm p-3 flex flex-col items-center justify-center gap-2 transition-all text-center h-24 ${
+                        paymentMethod === method.id
+                          ? "border-orange-500 bg-orange-50"
+                          : "border-sand-200 bg-white hover:border-orange-300"
                       }`}
                     >
-                      {method}
+                      <img src={method.img} alt={method.id} className="h-10 w-10 object-contain rounded-md shadow-3xs" />
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${paymentMethod === method.id ? "text-orange-700" : "text-charcoal-600"}`}>
+                        {method.id}
+                      </span>
                     </button>
                   ))}
                 </div>
