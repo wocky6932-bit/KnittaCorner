@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Eye, ShoppingCart, Check, X } from "lucide-react";
+import { Heart, Eye, ShoppingCart, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Product } from "@/data/initialData";
 import { useShop } from "@/context/ShopContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,6 +16,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { toggleWishlist, isWishlisted, addToCart, cart } = useShop();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const images = product.images && product.images.length > 0 ? product.images : ["https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80"];
+  const hasMultipleImages = images.length > 1;
 
   const favorited = isWishlisted(product.id);
   const inCart = cart.some((item) => item.product.id === product.id);
@@ -47,35 +51,75 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Product Image Panel */}
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-sand-50">
           <Link href={`/product/${product.id}`}>
-            {product.images && product.images.length > 0 && product.images[0] ? (
-              product.images[0].match(/\.(mp4|mov|webm)$/i) || product.images[0].startsWith("data:video") ? (
-                <video
-                  src={product.images[0]}
-                  muted
-                  playsInline
-                  autoPlay
-                  loop
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
-                />
-              ) : (
-                <Image
-                  src={product.images[0]}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 640px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-103"
-                />
-              )
+            {images[currentImageIndex]?.match(/\.(mp4|mov|webm)$/i) || images[currentImageIndex]?.startsWith("data:video") ? (
+              <video
+                src={images[currentImageIndex]}
+                muted
+                playsInline
+                autoPlay
+                loop
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+              />
             ) : (
               <Image
-                src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80"
+                src={images[currentImageIndex]}
                 alt={product.name}
                 fill
-                sizes="(max-width: 640px) 50vw, 25vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-all duration-500 ease-out group-hover:scale-103"
               />
             )}
           </Link>
+
+          {/* Image navigation arrows */}
+          {hasMultipleImages && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/80 p-1 text-charcoal-700 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                aria-label="Image précédente"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/80 p-1 text-charcoal-700 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                aria-label="Image suivante"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </>
+          )}
+
+          {/* Dot indicators */}
+          {hasMultipleImages && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+              {images.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setCurrentImageIndex(idx);
+                  }}
+                  className={`rounded-full transition-all ${
+                    idx === currentImageIndex
+                      ? "w-4 h-1.5 bg-white"
+                      : "w-1.5 h-1.5 bg-white/50 hover:bg-white/80"
+                  }`}
+                  aria-label={`Image ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Sold out overlay */}
           {!product.inStock && (
